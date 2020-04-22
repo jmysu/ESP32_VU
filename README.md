@@ -6,7 +6,9 @@ A simple ESP32 T-Audio I2S VU w/ NeoPixels
 <img src="picture/WM8978VU0422.png"/> &nbsp;&nbsp;&nbsp;<img src="picture/wm8978vu.gif" width=240/>
 
 <br><br>
-
+# I2S Output
+<img src="picture/400px-Waveforms.svg.png"/>
+## To test the I2S Output, rename either _mainDuDu for _mainDoReMi to cpp, build and flash.
 
 ### References
   - [TTGO T-Audio IDF components]
