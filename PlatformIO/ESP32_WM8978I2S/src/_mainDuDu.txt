@@ -1,0 +1,89 @@
+/******************************************************************************
+Test program for implementing wavetable synthesis using the ESP32 WM8978 Audio Codec
+
+Based on the espressif sample i2s code:
+https://github.com/espressif/esp-idf/tree/97eecfa1b2b95a6f77e8e9ffcb676ded687ab68f/examples/peripherals/i2s
+
+And the TTGO TAudio demo sketch:
+https://github.com/LilyGO/TTGO-TAudio
+
+And the DFRobot NuvotonDuino:
+https://github.com/DFRobot/NuvotonDuino
+
+*******************************************************************************/
+#include <Arduino.h>
+#include <SPI.h>
+#include <Wire.h>
+#include "wm8978.h" //borrowed from the NuvotonDuino example
+#include "I2S.h"
+
+const short int sineT64[64] = {0, 3136, 6242, 9289, 12245, 15084, 17778, 20300, 22627, 24736, 26607, 28221, 29564, 30622, 31385, 31845, 32000,
+                             31845, 31385, 30622, 29564, 28221, 26607, 24736, 22627, 20300, 17778, 15084, 12245, 9289, 6242, 3136, 0,
+                             -3137, -6243, -9290, -12246, -15085, -17779, -20301, -22628, -24737, -26608, -28222, -29565, -30623, -31386, -31846, -32000,
+                             -31846, -31386, -30623, -29565, -28222, -26608, -24737, -22628, -20301, -17779, -15085, -12246, -9290, -6243, -3137};
+
+//16-bit 128-sample sine wavetable
+int sineT[128]= {0, 1620, 3237, 4845, 6442, 8023, 9584, 11122, 12633, 14113, 15558, 16965, 18331, 19651, 20924, 22146, 23313, 24423, 25474, 26462, 27385, 28241, 29029, 29745, 30388, 30957, 31451, 31867, 32205, 32465, 32645, 32745,
+32765, 32705, 32565, 32345, 32046, 31668, 31213, 30682, 30076, 29396, 28644, 27822, 26931, 25975, 24956, 23875, 22736, 21541, 20294, 18997, 17653, 16266, 14840, 13377, 11881, 10356, 8806, 7234, 5645, 4042, 2429, 810, -810,
+-2429, -4042, -5646, -7235, -8807, -10357, -11881, -13377, -14840, -16267, -17653, -18997, -20294, -21542, -22736, -23875, -24956, -25976, -26932, -27822, -28644, -29396, -30076, -30682, -31214, -31668, -32046, -32345, -32565, -32705,
+-32765, -32745, -32645, -32465, -32205, -31867, -31450, -30957, -30388, -29745, -29028, -28241, -27385, -26461, -25473, -24423, -23313, -22145, -20924, -19651, -18330, -16965, -15557, -14112, -12632, -11122, -9584, -8022, -6441, -4845, -3236, -1620};
+
+void playDuDu()
+{
+    signed short samples[256];
+    size_t written;
+    int total_chunks = 375;
+
+    for (int j = 0; j < total_chunks; j++) {
+            for (int i = 0; i < 256; i++) {
+                samples[i] = sineT[(i & 128)] * (j < 37);
+                }
+            i2s_write((i2s_port_t)0, (const char *)samples, 512, &written, portMAX_DELAY);
+            }
+}
+
+/****************************************
+ * WM8978 I2C SETUP
+ * Uses the WM8978 I2C library distributed with the NuovoDuino
+  *****************************************/
+  void wm8978Setup() {
+  
+    Wire.begin(19,18); //(SDA,SCL,Frequency)
+  
+    WM8978_Init();
+
+    WM8978_ADDA_Cfg(1, 1);
+    WM8978_Input_Cfg(1, 0, 0);
+    WM8978_Output_Cfg(1, 0);
+    WM8978_MIC_Gain(0);
+    WM8978_AUX_Gain(0);
+    WM8978_LINEIN_Gain(0);
+    WM8978_SPKvol_Set(16);
+    WM8978_HPvol_Set(10, 10); //0-63
+    WM8978_EQ_3D_Dir(0);
+    WM8978_EQ1_Set(0, 24);
+    WM8978_EQ2_Set(0, 24);
+    WM8978_EQ3_Set(0, 24);
+    WM8978_EQ4_Set(0, 24);
+    WM8978_EQ5_Set(0, 24);
+    WM8978_I2S_Cfg(2, 0);
+    
+} //wm8978Setup
+
+
+/******************************************
+ SETUP AND LOOP
+ ******************************************/ 
+void setup() {
+  Serial.begin(115200);
+  Serial.println("Init WM8978");
+  wm8978Setup();
+  Serial.println("Init I2S...");
+  I2S_Init();
+  Serial.println("Starting DuDu...");
+}
+
+void loop(){
+  //Play beep tone per 1 second
+  playDuDu();
+}
