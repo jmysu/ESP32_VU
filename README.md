@@ -10,6 +10,11 @@ To test the I2S Output, rename either _mainDuDu.txt or _mainDoReMi.txt to cpp, b
 The _mainDoReMi implemented 4 kinds of waveform as above picture!
 <br><br>
 
+## Play MP3
+<img src="picture/playMP3_0422.png"/>
+To play MP3 file, put the file into SD card, build _mainMP3.cpp and flash!
+
+
 ### References
   - [TTGO T-Audio IDF components](https://github.com/LilyGO/TTGO-TAudio) TTGO IDF code at Github
   - [Arduino FFT](https://github.com/kosme/arduinoFFT) Arduino Fast Fourier Transform for Arduino 
