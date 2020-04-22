@@ -12,10 +12,12 @@ The _mainDoReMi implemented 4 kinds of waveform as above picture!
 
 ## Play MP3
 <img src="picture/playMP3_0422.png"/>
-To play MP3 file, put the file into SD card, build _mainMP3.cpp and flash!
+To play MP3 audio, put the file into SD card root, build _mainMP3.cpp and flash!
+<br>
+<br>
+<br>
 
-
-### References
+## References
   - [TTGO T-Audio IDF components](https://github.com/LilyGO/TTGO-TAudio) TTGO IDF code at Github
   - [Arduino FFT](https://github.com/kosme/arduinoFFT) Arduino Fast Fourier Transform for Arduino 
   - [NeoPixel library](https://github.com/adafruit/Adafruit_NeoPixel) Arduino Adafruit NeoPixel Library.
