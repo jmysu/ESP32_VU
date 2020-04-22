@@ -6,7 +6,7 @@ A simple ESP32 T-Audio I2S VU w/ NeoPixels
 <br><br>
 ## I2S Output
 <img src="picture/400px-Waveforms.svg.png"/>
-## To test the I2S Output, rename either ___ _mainDuDu.txt___ or ___ _mainDoReMi.txt___ to cpp, build and flash.
+To test the I2S Output, rename either _mainDuDu.txt or _mainDoReMi.txt to cpp, build and flash.
 <br><br>
 
 ### References
