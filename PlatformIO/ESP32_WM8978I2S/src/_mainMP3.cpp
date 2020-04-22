@@ -36,7 +36,30 @@ Audio audio;
 
 //String ssid =     "xxxxxx";
 //String password = "xxxxxx";
+const i2s_port_t I2S_PORT = I2S_NUM_0;
+const int BLOCK_SIZE = 128;
+int32_t samples[BLOCK_SIZE];
 
+//----------------------------
+#include <Adafruit_NeoPixel.h>
+// NEOPIXEL SETUP
+#define PIN            22
+#define NUMPIXELS      19
+Adafruit_NeoPixel pixels = Adafruit_NeoPixel(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
+const uint32_t NEO_BG = pixels.Color(0, 0, 150);
+const uint32_t NEO_FG = pixels.Color(50, 250, 50);
+void NeoSpinner(int pos) {
+  for (int i=pos; i<=NUMPIXELS; i++) {
+    pixels.setPixelColor(i, NEO_BG);
+    }
+  for (int i=0; i<pos; i++) {
+    int iV = map(pos,0,200,0,100);
+    pixels.setPixelColor(i%NUMPIXELS, pixels.Color(iV, 250, 50)); // rotate clockwise
+    }
+  //pixels.setBrightness(1+(pos>>1));  
+  pixels.show();  
+}
+//--------------------------=
 // optional
 void audio_info(const char *info){
     Serial.print("info        "); Serial.println(info);
@@ -106,9 +129,20 @@ void setup() {
     I2S_Init();
     Serial.println("Starting MP3...\n");
     audio.connecttoSD(fileMP3);
+    
+    pixels.begin();
+    pixels.setBrightness(1);
+    NeoSpinner(0);
 }
 
+int iCurrentTime;
 void loop()
 {
     audio.loop();
+     
+    if (iCurrentTime != audio.getAudioCurrentTime()) {
+        iCurrentTime = audio.getAudioCurrentTime();
+        //Serial.printf("CurrentTime:%ds\n", iCurrentTime);
+        NeoSpinner(iCurrentTime%NUMPIXELS);
+        }
 }
