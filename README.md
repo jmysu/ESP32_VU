@@ -6,9 +6,10 @@ A simple ESP32 T-Audio I2S VU w/ NeoPixels
 <br><br>
 ## I2S Output
 <img src="picture/400px-Waveforms.svg.png"/>
-## To test the I2S Output, rename either _mainDuDu for _mainDoReMi to cpp, build and flash.
+## To test the I2S Output, rename either ___ _mainDuDu.txt___ or ___ _mainDoReMi.txt___ to cpp, build and flash.
 <br><br>
 
 ### References
-  - [TTGO T-Audio IDF components]
+  - [TTGO T-Audio IDF components](https://github.com/LilyGO/TTGO-TAudio) TTGO IDF code at Github
+  - [Arduino FFT](https://github.com/kosme/arduinoFFT) Arduino Fast Fourier Transform for Arduino 
   - [NeoPixel library](https://github.com/adafruit/Adafruit_NeoPixel) Arduino Adafruit NeoPixel Library.
