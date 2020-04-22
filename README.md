@@ -3,7 +3,7 @@ A simple ESP32 T-Audio I2S VU w/ NeoPixels
 
 
 
-<img src="picture/wm8978vu.gif" width=320/> &nbsp;&nbsp;&nbsp;<img src="picture/WM8978VU0422.png"/>
+<img src="picture/wm8978vu.gif" width=200/> &nbsp;&nbsp;&nbsp;<img src="picture/WM8978VU0422.png"/>
 
 <br><br>
 
