@@ -36,23 +36,24 @@ int32_t samples[BLOCK_SIZE];
 
 #include <Adafruit_NeoPixel.h>
 // NEOPIXEL SETUP
-#define PIN            22
+#define NEOPIN         22
 #define NUMPIXELS      19
 
-Adafruit_NeoPixel pixels = Adafruit_NeoPixel(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
+Adafruit_NeoPixel pixels = Adafruit_NeoPixel(NUMPIXELS, NEOPIN, NEO_GRB + NEO_KHZ800);
 const uint32_t NEO_BG = pixels.Color(0, 0, 150);
 const uint32_t NEO_FG = pixels.Color(50, 250, 50);
 
 void NeoSpinner(int pos) {
   for (int i=0; i<=pos; i++) {
     int iV = map(pos,0,200,0,100);
-    pixels.setPixelColor(i%NUMPIXELS, pixels.Color(iV, 250, iV)); // rotate clockwise
+    pixels.setPixelColor(i%NUMPIXELS, pixels.Color(50+iV, 255, 50+iV)); // rotate clockwise
     }
-  for (int i=pos+1; i<=NUMPIXELS; i++) {
+  for (int i=pos+1; i<NUMPIXELS; i++) {
     pixels.setPixelColor(i, NEO_BG);
     }  
   //pixels.setBrightness(1+(pos>>1));  
   pixels.show();  
+  pixels.show();  //Workaround for first LED always lit!!!
 }
 
 int iVUfft, iVUfftOld;
@@ -96,7 +97,6 @@ void processFFT() {
 ///////////////////////////////////////////////////////////////////////////////
 void setup() {
   // put your setup code here, to run once:
-
   Serial.begin(115200);
   delay(100);
   Serial.println("Setting up I2S");
