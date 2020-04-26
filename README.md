@@ -21,5 +21,5 @@ To play MP3 audio, put the file into SD card root, build _mainMP3.cpp and flash!
   - [TTGO T-Audio IDF components](https://github.com/LilyGO/TTGO-TAudio) TTGO IDF code at Github
   - [Arduino FFT](https://github.com/kosme/arduinoFFT) Arduino Fast Fourier Transform for Arduino 
   - [NeoPixel library](https://github.com/adafruit/Adafruit_NeoPixel) Arduino Adafruit NeoPixel Library.
-  - [FastLED library] (https://github.com/FastLED/FastLED) Another faster NeoPixel Library.
+  - [FastLED library](https://github.com/FastLED/FastLED) Another faster NeoPixel Library.
   - [Helix MP3 I2S Audio](https://github.com/schreibfaul1/ESP32-audioI2S) Original ESP32 MP3 I2S player
