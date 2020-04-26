@@ -34,6 +34,29 @@ int32_t samples[BLOCK_SIZE];
  int bands[8] = {0, 0, 0, 0, 0, 0, 0, 0};
 #endif
 
+#ifdef FASTLED
+ #include <FastLED.h>
+ FASTLED_USING_NAMESPACE
+ #define DATA_PIN 22
+ #define LED_TYPE WS2812B
+ #define COLOR_ORDER GRB
+ #define NUM_LEDS 19
+ CRGB leds[NUM_LEDS];
+
+ void NeoSpinner(int pos) {
+  if (pos>=NUM_LEDS) return; 
+  for (int i=0; i<=pos; i++) {
+    int iV = map(pos,0,200,0,100);
+    //leds[i] = CRGB::Magenta;
+    leds[i] = CRGB(iV,200-iV, iV);
+    }
+  for (int i=pos+1; i<NUM_LEDS; i++) {
+    leds[i] = CRGB::DarkBlue;
+    }     
+  FastLED.show();  
+  //FastLED.delay(33);
+  }
+#else //NeoPixel
 #include <Adafruit_NeoPixel.h>
 // NEOPIXEL SETUP
 #define NEOPIN         22
@@ -46,7 +69,7 @@ const uint32_t NEO_FG = pixels.Color(50, 250, 50);
 void NeoSpinner(int pos) {
   for (int i=0; i<=pos; i++) {
     int iV = map(pos,0,200,0,100);
-    pixels.setPixelColor(i%NUMPIXELS, pixels.Color(50+iV, 255, 50+iV)); // rotate clockwise
+    pixels.setPixelColor(i%NUMPIXELS, pixels.Color(50+iV, 250-iV, 50+iV)); // rotate clockwise
     }
   for (int i=pos+1; i<NUMPIXELS; i++) {
     pixels.setPixelColor(i, NEO_BG);
@@ -55,13 +78,14 @@ void NeoSpinner(int pos) {
   pixels.show();  
   pixels.show();  //Workaround for first LED always lit!!!
 }
+#endif
 
 int iVUfft, iVUfftOld;
 void processFFT() {
 #ifdef _FFT
   //for FFT processing
   for (uint16_t i = 0; i < BLOCK_SIZE; i++) {
-    vReal[i] = samples[i] >> 16;
+    vReal[i] = (samples[i] >> 16)&0x0FFFF;
     vImag[i] = 0.0; //Imaginary part must be zeroed in case of looping to avoid wrong calculations and overflows
     }
 
@@ -73,7 +97,7 @@ void processFFT() {
     }
   
   for (int i = 2; i < (BLOCK_SIZE/2); i++){ // Don't use sample 0 and only first SAMPLES/2 are usable. Each array eleement represents a frequency and its value the amplitude.
-    if (vReal[i] > 1000) { // Add a crude noise filter, 10 x amplitude or more
+    if (vReal[i] > 1500) { // Add a crude noise filter, 10 x amplitude or more
       if (i<=2 )             bands[0] = max(bands[0], (int)(vReal[i]/amplitude)); // 125Hz
       if (i >3   && i<=5 )   bands[1] = max(bands[1], (int)(vReal[i]/amplitude)); // 250Hz
       if (i >5   && i<=7 )   bands[2] = max(bands[2], (int)(vReal[i]/amplitude)); // 500Hz
@@ -86,7 +110,7 @@ void processFFT() {
     //for (byte band = 0; band <= 6; band++) display.drawHorizontalLine(18*band,64-peak[band],14);
     }
   iVUfft = 0;  
-  for (int i = 0; i < 4; i++) {
+  for (int i = 0; i < 8; i++) {
     Serial.printf("%4d", bands[i]);
     iVUfft += bands[i];
     }
@@ -98,15 +122,25 @@ void processFFT() {
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(115200);
-  delay(100);
+  delay(500);
   Serial.println("Setting up I2S");
   I2S_Init();
   wm8978Setup();
   Serial.println("I2S setup completed, VU started!");
 
+#ifdef FASTLED
+  // tell FastLED about the LED strip configuration
+  FastLED.addLeds<LED_TYPE,DATA_PIN,COLOR_ORDER>(leds, NUM_LEDS);
+  //FastLED.addLeds<LED_TYPE,DATA_PIN,CLK_PIN,COLOR_ORDER>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip);
+  // set master brightness control
+  FastLED.setBrightness(5);
+  FastLED.show();
+  delay(500); //Allow sometine for FastLED processing
+#else
   pixels.begin();
   pixels.setBrightness(1);
   pixels.show();
+#endif  
 }
 
 int iVU; //sound pressure 0~1024
@@ -123,13 +157,13 @@ void loop() {
   int samples_read = num_bytes_read / 8;
 
   if (samples_read > 0) {
-    float mean = 0;
+    int32_t mean = 0;
     int32_t inorm = 0;
     int32_t imax=-1000000;
     int32_t imin= 1000000;
 
     for (int i = 0; i < samples_read; ++i) {
-      int32_t d16 = samples[i] >> 16; //Adjust for I2S_COMM_FORMAT_I2S_MSB 16bit from 32bit sample
+      int32_t d16 = (samples[i] >> 16)&0x0FFFF; //Adjust for I2S_COMM_FORMAT_I2S_MSB 16bit from 32bit sample
       mean += d16;
       }      
     mean = mean / samples_read;
@@ -141,8 +175,8 @@ void loop() {
       //Serial.printf("%5d ", inorm);
       }
     iVU = (imax - imin);  
-    iPos = map(iVU,0,512,0,18);
-    Serial.printf("\nMean/VU/Pos/FFT:%5.0f %5d %3d\t\t", mean, iVU, iPos);
+    iPos = map(iVU,0,mean,0,18);
+    Serial.printf("\nMean/VU/Pos/FFT:%6d %5d %3d\t\t", mean, iVU, iPos);
   }
   
   processFFT();
