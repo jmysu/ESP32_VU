@@ -1,5 +1,5 @@
 # ESP32_VU [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)<br>
-A simple ESP32 T-Audio I2S VU w/ NeoPixels
+A simple ESP32 T-Audio I2S VU w/ NeoPixels, fixed random flickering issue by replacing library with FastLED.
 
 
 <img src="picture/WM8978VU0422.png"/> &nbsp;&nbsp;&nbsp;<img src="picture/wm8978vu.gif" width=240/>&nbsp;&nbsp;&nbsp;<img src="picture/Neo0426.gif" width=240/>
